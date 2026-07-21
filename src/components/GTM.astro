@@ -42,13 +42,7 @@ const { gtmId } = siteConfig;
         window.__loadGTM();
       }
     </script>
-    <noscript>
-      <iframe
-        src={`https://www.googletagmanager.com/ns.html?id=${gtmId}`}
-        height="0"
-        width="0"
-        style="display:none;visibility:hidden"
-      ></iframe>
-    </noscript>
+    <!-- Không thêm noscript GTM iframe: người dùng tắt JS không thể tương tác consent banner
+         (banner cũng cần JS), nên tag không bao giờ được phép fire cho họ theo nguyên tắc consent-first. -->
   </>
 )}

@@ -17,33 +17,46 @@ const t = useTranslations(lang);
 
 <script is:inline>
   (function () {
-    function init() {
-      const modal = document.getElementById("search-modal");
-      const trigger = document.getElementById("search-trigger");
-      if (!modal || modal.dataset.bound) return;
-      modal.dataset.bound = "1";
+    function getModal() {
+      return document.getElementById("search-modal");
+    }
+    function open() {
+      const modal = getModal();
+      modal?.classList.remove("hidden");
+      modal?.classList.add("flex");
+    }
+    function close() {
+      const modal = getModal();
+      modal?.classList.add("hidden");
+      modal?.classList.remove("flex");
+    }
 
-      function open() {
-        modal.classList.remove("hidden");
-        modal.classList.add("flex");
-      }
-      function close() {
-        modal.classList.add("hidden");
-        modal.classList.remove("flex");
-      }
+    function init() {
+      // #search-modal/#search-trigger bị tạo mới sau mỗi lần điều hướng (client router thay
+      // toàn bộ <body>), nên phải gắn lại listener trên chính các element này mỗi lần init().
+      const modal = getModal();
+      const trigger = document.getElementById("search-trigger");
+      if (!modal) return;
 
       trigger?.addEventListener("click", open);
       modal.addEventListener("click", (e) => {
         if (e.target === modal) close();
       });
+    }
+
+    // Ngược lại, document tồn tại xuyên suốt mọi lần điều hướng, nên chỉ được gắn listener
+    // này đúng 1 lần — gắn theo element cũ (đã bị swap) sẽ khiến nó nhân bản mỗi lần chuyển trang.
+    if (!window.__searchModalKeydownBound) {
+      window.__searchModalKeydownBound = true;
       document.addEventListener("keydown", (e) => {
         if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
           e.preventDefault();
-          modal.classList.contains("hidden") ? open() : close();
+          getModal()?.classList.contains("hidden") ? open() : close();
         }
         if (e.key === "Escape") close();
       });
     }
+
     if (document.readyState !== "loading") init();
     else document.addEventListener("DOMContentLoaded", init);
     document.addEventListener("astro:page-load", init);

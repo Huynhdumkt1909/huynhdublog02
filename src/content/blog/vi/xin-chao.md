@@ -3,6 +3,7 @@ title: "Xin chào, đây là blog của mình"
 excerpt: "Vài dòng giới thiệu về blog và lý do mình bắt đầu viết."
 tags: ["giới thiệu"]
 publishedDate: 2026-07-21
+translationKey: "intro-post"
 ---
 
 Đây là bài viết đầu tiên trên **huynhdu.info**. Mình dùng blog này để ghi lại những gì học được về công nghệ, sản phẩm, và một vài dự án cá nhân.

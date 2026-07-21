@@ -17,6 +17,14 @@ export async function getPostBySlug(lang: Lang, slug: string) {
   return posts[0];
 }
 
+export async function getPostByTranslationKey(lang: Lang, translationKey: string) {
+  const posts = await getCollection("blog", (entry) => {
+    const [entryLang] = entry.id.split("/");
+    return entryLang === lang && !entry.data.draft && entry.data.translationKey === translationKey;
+  });
+  return posts[0];
+}
+
 export function postSlug(entry: CollectionEntry<"blog">) {
   const [, ...rest] = entry.id.split("/");
   return rest.join("/").replace(/\.mdx?$/, "");

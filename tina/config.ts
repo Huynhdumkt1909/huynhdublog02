@@ -44,6 +44,12 @@ export default defineConfig({
           { type: "datetime", name: "publishedDate", label: "Published date", required: true },
           { type: "datetime", name: "updatedDate", label: "Updated date" },
           { type: "boolean", name: "draft", label: "Draft" },
+          {
+            type: "string",
+            name: "translationKey",
+            label: "Mã liên kết bản dịch",
+            description: "Đặt cùng giá trị cho bản vi và bản en của cùng 1 bài để nút đổi ngôn ngữ trỏ đúng bài tương ứng",
+          },
           { type: "object", name: "seo", label: "SEO", fields: [...seoFields] },
           { type: "rich-text", name: "body", label: "Body", isBody: true },
         ],

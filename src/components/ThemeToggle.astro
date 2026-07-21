@@ -47,7 +47,9 @@
     }
 
     document.addEventListener("astro:after-swap", () => {
-      root.classList.toggle("dark", localStorage.getItem("theme") === "dark");
+      const storedAfterSwap = localStorage.getItem("theme");
+      const isDarkAfterSwap = storedAfterSwap ? storedAfterSwap === "dark" : prefersDark;
+      root.classList.toggle("dark", isDarkAfterSwap);
       syncIcons();
     });
   })();

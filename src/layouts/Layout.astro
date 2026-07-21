@@ -8,7 +8,8 @@ import SEO from "../components/SEO.astro";
 import GTM from "../components/GTM.astro";
 import ConsentBanner from "../components/ConsentBanner.astro";
 import SearchModal from "../components/SearchModal.astro";
-import { getLangFromUrl } from "../i18n/utils";
+import { getLangFromUrl, getDefaultAlternatePath } from "../i18n/utils";
+import { siteConfig } from "../site.config";
 
 interface Props {
   title: string;
@@ -19,10 +20,16 @@ interface Props {
   updatedDate?: Date;
   tags?: string[];
   jsonLd?: Record<string, unknown> | Record<string, unknown>[];
+  // đường dẫn chính xác sang ngôn ngữ kia (khác slug, vd bài blog); mặc định suy ra từ URL hiện tại
+  altPath?: string;
 }
 
-const { title, description, type, image, publishedDate, updatedDate, tags, jsonLd } = Astro.props;
+const { title, description, type, image, publishedDate, updatedDate, tags, jsonLd, altPath } = Astro.props;
 const lang = getLangFromUrl(Astro.url);
+const otherPath = altPath ?? getDefaultAlternatePath(Astro.url.pathname, lang);
+const viPath = lang === "vi" ? Astro.url.pathname : otherPath;
+const enPath = lang === "en" ? Astro.url.pathname : otherPath;
+const rssPath = lang === "en" ? "/en/rss.xml" : "/rss.xml";
 ---
 
 <!doctype html>
@@ -32,13 +39,16 @@ const lang = getLangFromUrl(Astro.url);
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="generator" content={Astro.generator} />
-    <link rel="alternate" type="application/rss+xml" title="RSS" href="/rss.xml" />
+    <link rel="alternate" type="application/rss+xml" title="RSS" href={rssPath} />
+    <link rel="alternate" hreflang="vi" href={new URL(viPath, siteConfig.url)} />
+    <link rel="alternate" hreflang="en" href={new URL(enPath, siteConfig.url)} />
+    <link rel="alternate" hreflang="x-default" href={new URL(viPath, siteConfig.url)} />
     <SEO {title} {description} {type} {image} {publishedDate} {updatedDate} {tags} {jsonLd} />
     <GTM />
     <ClientRouter />
   </head>
   <body class="flex min-h-screen flex-col">
-    <Header />
+    <Header altPath={altPath} />
     <main class="flex-1">
       <slot />
     </main>

@@ -8,6 +8,8 @@ import ShareButtons from "../components/ShareButtons.astro";
 import AuthorByline from "../components/AuthorByline.astro";
 import { getLangFromUrl, useTranslations, getLocalizedPath } from "../i18n/utils";
 import { siteConfig } from "../site.config";
+import { getPostByTranslationKey, postSlug } from "../lib/content";
+import type { Lang } from "../i18n/ui";
 
 interface Props {
   title: string;
@@ -17,11 +19,24 @@ interface Props {
   tags: string[];
   headings: MarkdownHeading[];
   minutes: number;
+  translationKey?: string;
+  cover?: string;
+  seo?: { title?: string; description?: string; ogImage?: string };
 }
 
-const { title, excerpt, publishedDate, updatedDate, tags, headings, minutes } = Astro.props;
+const { title, excerpt, publishedDate, updatedDate, tags, headings, minutes, translationKey, cover, seo } = Astro.props;
 const lang = getLangFromUrl(Astro.url);
 const t = useTranslations(lang);
+
+const otherLang: Lang = lang === "vi" ? "en" : "vi";
+const translatedPost = translationKey ? await getPostByTranslationKey(otherLang, translationKey) : undefined;
+const altPath = translatedPost
+  ? getLocalizedPath(`/blog/${postSlug(translatedPost)}`, otherLang)
+  : getLocalizedPath("/blog", otherLang);
+
+const seoTitle = seo?.title ?? title;
+const seoDescription = seo?.description ?? excerpt;
+const seoImage = seo?.ogImage ?? cover;
 
 const dateFormatted = publishedDate.toLocaleDateString(lang === "vi" ? "vi-VN" : "en-US", {
   year: "numeric",
@@ -50,7 +65,17 @@ const canonicalUrl = new URL(Astro.url.pathname, siteConfig.url).toString();
 const markdownUrl = `${Astro.url.pathname.replace(/\/$/, "")}.md`;
 ---
 
-<Layout title={title} description={excerpt} type="article" publishedDate={publishedDate} updatedDate={updatedDate} tags={tags} jsonLd={jsonLd}>
+<Layout
+  title={seoTitle}
+  description={seoDescription}
+  type="article"
+  image={seoImage}
+  publishedDate={publishedDate}
+  updatedDate={updatedDate}
+  tags={tags}
+  jsonLd={jsonLd}
+  altPath={altPath}
+>
   <ReadingProgress />
   <div class="mx-auto grid max-w-[var(--wide-width)] grid-cols-1 gap-10 px-6 py-12 lg:grid-cols-[minmax(0,var(--content-width))_14rem]">
     <article data-article>

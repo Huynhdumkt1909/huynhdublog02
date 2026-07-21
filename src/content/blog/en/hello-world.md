@@ -3,6 +3,7 @@ title: "Hello, this is my blog"
 excerpt: "A short introduction to this blog and why I started writing."
 tags: ["intro"]
 publishedDate: 2026-07-21
+translationKey: "intro-post"
 ---
 
 This is the first post on **huynhdu.info**. I use this blog to write down what I learn about technology, products, and a few personal projects.

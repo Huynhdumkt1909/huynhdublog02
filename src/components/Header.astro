@@ -4,6 +4,11 @@ import { getLangFromUrl, useTranslations, getLocalizedPath } from "../i18n/utils
 import ThemeToggle from "./ThemeToggle.astro";
 import LangSwitch from "./LangSwitch.astro";
 
+interface Props {
+  altPath?: string;
+}
+
+const { altPath } = Astro.props;
 const lang = getLangFromUrl(Astro.url);
 const t = useTranslations(lang);
 const home = getLocalizedPath("/", lang);
@@ -45,7 +50,7 @@ const navLinks = [
         </svg>
         <span class="hidden sm:inline">⌘K</span>
       </button>
-      <LangSwitch />
+      <LangSwitch altPath={altPath} />
       <ThemeToggle />
       <button
         id="mobile-menu-toggle"
@@ -75,33 +80,46 @@ const navLinks = [
 
 <script is:inline>
   (function () {
-    function init() {
+    function close() {
       const toggle = document.getElementById("mobile-menu-toggle");
       const menu = document.getElementById("mobile-menu");
-      if (!toggle || !menu || toggle.dataset.bound) return;
-      toggle.dataset.bound = "1";
+      if (!toggle || !menu) return;
+      menu.classList.add("hidden");
+      menu.classList.remove("flex");
+      toggle.setAttribute("aria-expanded", "false");
+      toggle.querySelector('[data-icon="open"]')?.classList.remove("hidden");
+      toggle.querySelector('[data-icon="close"]')?.classList.add("hidden");
+    }
+    function open() {
+      const toggle = document.getElementById("mobile-menu-toggle");
+      const menu = document.getElementById("mobile-menu");
+      if (!toggle || !menu) return;
+      menu.classList.remove("hidden");
+      menu.classList.add("flex");
+      toggle.setAttribute("aria-expanded", "true");
+      toggle.querySelector('[data-icon="open"]')?.classList.add("hidden");
+      toggle.querySelector('[data-icon="close"]')?.classList.remove("hidden");
+    }
 
-      function close() {
-        menu.classList.add("hidden");
-        menu.classList.remove("flex");
-        toggle.setAttribute("aria-expanded", "false");
-        toggle.querySelector('[data-icon="open"]')?.classList.remove("hidden");
-        toggle.querySelector('[data-icon="close"]')?.classList.add("hidden");
-      }
-      function open() {
-        menu.classList.remove("hidden");
-        menu.classList.add("flex");
-        toggle.setAttribute("aria-expanded", "true");
-        toggle.querySelector('[data-icon="open"]')?.classList.add("hidden");
-        toggle.querySelector('[data-icon="close"]')?.classList.remove("hidden");
-      }
+    function init() {
+      // toggle/menu bị tạo mới sau mỗi lần điều hướng, phải gắn lại listener trên element mới.
+      const toggle = document.getElementById("mobile-menu-toggle");
+      const menu = document.getElementById("mobile-menu");
+      if (!toggle || !menu) return;
 
       toggle.addEventListener("click", () => {
         menu.classList.contains("hidden") ? open() : close();
       });
       menu.querySelectorAll("a").forEach((a) => a.addEventListener("click", close));
+    }
+
+    // document tồn tại xuyên suốt điều hướng — gắn "đóng menu khi chuyển trang" đúng 1 lần,
+    // nếu không sẽ nhân bản mỗi lần nav vì guard cũ nằm trên toggle (element bị swap).
+    if (!window.__mobileMenuPageLoadBound) {
+      window.__mobileMenuPageLoadBound = true;
       document.addEventListener("astro:page-load", close);
     }
+
     if (document.readyState !== "loading") init();
     else document.addEventListener("DOMContentLoaded", init);
     document.addEventListener("astro:page-load", init);

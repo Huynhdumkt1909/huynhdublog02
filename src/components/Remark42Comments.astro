@@ -21,7 +21,17 @@ const { host, siteId } = siteConfig.remark42;
             locale: lang === "vi" ? "vi" : "en",
           };
           const mount = document.getElementById("remark42");
-          if (mount) mount.innerHTML = "";
+          if (!mount) return;
+          mount.innerHTML = "";
+
+          // Sau lần đầu, module embed.mjs đã được trình duyệt cache theo URL nên chèn lại
+          // <script type=module> không chạy lại nữa (spec ES module). Remark42 cung cấp sẵn
+          // createInstance() để remount đúng bài viết mới khi chuyển trang bằng client router.
+          if (window.REMARK42 && typeof window.REMARK42.createInstance === "function") {
+            window.REMARK42.createInstance(window.remark_config);
+            return;
+          }
+
           (function (e, n) {
             for (let o = 0; o < e.length; o++) {
               const r = n.createElement("script");
@@ -44,14 +54,20 @@ const { host, siteId } = siteConfig.remark42;
         if (document.readyState !== "loading") init();
         else document.addEventListener("DOMContentLoaded", init);
 
-        document.addEventListener("click", (e) => {
-          if (e.target.closest?.("#theme-toggle") && window.REMARK42) {
-            setTimeout(() => {
-              const isDark = document.documentElement.classList.contains("dark");
-              window.REMARK42.changeTheme(isDark ? "dark" : "light");
-            }, 0);
-          }
-        });
+        // document persists qua client-side nav còn init() re-chạy mỗi lần điều hướng
+        // (event page-load); nếu không guard bằng cờ toàn cục, listener dưới đây sẽ nhân bản
+        // sau mỗi lần chuyển trang thay vì chỉ đăng ký đúng 1 lần.
+        if (!window.__remark42ThemeSyncBound) {
+          window.__remark42ThemeSyncBound = true;
+          document.addEventListener("click", (e) => {
+            if (e.target.closest?.("#theme-toggle") && window.REMARK42) {
+              setTimeout(() => {
+                const isDark = document.documentElement.classList.contains("dark");
+                window.REMARK42.changeTheme(isDark ? "dark" : "light");
+              }, 0);
+            }
+          });
+        }
       })();
     </script>
     <noscript>Vui lòng bật JavaScript để xem bình luận (Remark42).</noscript>

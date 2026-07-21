@@ -1,15 +1,16 @@
 ---
-import { getLangFromUrl } from "../i18n/utils";
+import { getLangFromUrl, getDefaultAlternatePath } from "../i18n/utils";
 import { languages } from "../i18n/ui";
 
+interface Props {
+  // đường dẫn chính xác sang ngôn ngữ kia; truyền khi slug 2 ngôn ngữ khác nhau (vd bài blog)
+  altPath?: string;
+}
+
+const { altPath } = Astro.props;
 const lang = getLangFromUrl(Astro.url);
-const path = Astro.url.pathname;
-
-// Strip current locale prefix (if any) to get the "bare" path
-const bare = path.replace(/^\/en(\/|$)/, "/");
-
 const otherLang = lang === "vi" ? "en" : "vi";
-const otherPath = otherLang === "vi" ? bare : `/en${bare === "/" ? "" : bare}`;
+const otherPath = altPath ?? getDefaultAlternatePath(Astro.url.pathname, lang);
 ---
 
 <a

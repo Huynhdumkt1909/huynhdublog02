@@ -1,0 +1,9 @@
+# Chưa thêm Content-Security-Policy: codebase dùng nhiều script is:inline (Header, ThemeToggle,
+# SearchModal, Remark42, ConsentBanner, GTM, Turnstile...) và domain Remark42 host/GTM id còn
+# đang bỏ trống chưa cấu hình xong — viết CSP lúc này dễ sai (quá lỏng hoặc gãy khi bật các dịch
+# vụ đó sau). Nên thêm CSP sau khi GTM id + Remark42 host đã chốt domain thật.
+/*
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: DENY
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: camera=(), microphone=(), geolocation=()

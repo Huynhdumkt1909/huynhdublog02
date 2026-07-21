@@ -23,6 +23,12 @@ export const siteConfig = {
     host: '', // URL nơi tự host Remark42, vd: 'https://remark42.huynhdu.info'
     siteId: '', // site_id khai báo khi chạy container Remark42, vd: 'huynhdu-info'
   },
+  // Cloudflare Web Analytics: lấy token trong dashboard Cloudflare > Analytics > Web Analytics
+  // sau khi thêm site. Không cần consent gate vì không dùng cookie/localStorage (theo Cloudflare).
+  cloudflareAnalyticsToken: '',
+  // Cloudflare Turnstile site key (public, khác secret key) — dùng cho form newsletter chống spam bot.
+  // Lấy trong dashboard Cloudflare > Turnstile > Add site.
+  cloudflareTurnstileSiteKey: '',
 } as const;
 
 export type SiteConfig = typeof siteConfig;

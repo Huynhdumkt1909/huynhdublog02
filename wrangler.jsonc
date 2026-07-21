@@ -1,0 +1,11 @@
+{
+  "$schema": "https://developers.cloudflare.com/pages/reference/wrangler-configuration/wrangler.schema.json",
+  "name": "huynhdublog",
+  "compatibility_date": "2026-07-21",
+  // Site build tĩnh (output: "static" trong astro.config.mjs) — không cần @astrojs/cloudflare
+  // adapter, Cloudflare chỉ serve thẳng thư mục dist/ như static assets.
+  "assets": {
+    "directory": "./dist",
+    "not_found_handling": "404-page"
+  }
+}

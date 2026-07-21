@@ -4,7 +4,7 @@ import { getLangFromUrl, useTranslations } from "../i18n/utils";
 
 const lang = getLangFromUrl(Astro.url);
 const t = useTranslations(lang);
-const { buttondownUsername } = siteConfig;
+const { buttondownUsername, cloudflareTurnstileSiteKey } = siteConfig;
 ---
 
 <section class="mx-auto max-w-[var(--content-width)] rounded-xl border border-[var(--color-border)] bg-[var(--color-bg-elevated)] p-6">
@@ -23,7 +23,11 @@ const { buttondownUsername } = siteConfig;
       placeholder={t("newsletter.placeholder")}
       class="flex-1 rounded-full border border-[var(--color-border)] bg-transparent px-4 py-2 text-sm outline-none focus:border-[var(--color-accent)]"
     />
+    {cloudflareTurnstileSiteKey && (
+      <div id="turnstile-widget" data-sitekey={cloudflareTurnstileSiteKey} class="cf-turnstile" />
+    )}
     <button
+      id="newsletter-submit"
       type="submit"
       disabled={!buttondownUsername}
       class="rounded-full px-4 py-2 text-sm font-medium disabled:opacity-50"
@@ -38,3 +42,52 @@ const { buttondownUsername } = siteConfig;
     </p>
   )}
 </section>
+
+{cloudflareTurnstileSiteKey && (
+  <script is:inline>
+    (function () {
+      // Turnstile chỉ chặn được bot phía client (không chạy JS/không giải được challenge).
+      // Bot POST thẳng vào endpoint Buttondown thì widget này không cản được — muốn chặn triệt để
+      // cần thêm bước verify token phía server (Cloudflare Pages Function) trước khi forward sang
+      // Buttondown, việc này để sau khi đã có Buttondown API key thật để test.
+      function loadTurnstileScript(cb) {
+        if (window.turnstile) return cb();
+        if (window.__turnstileLoading) {
+          window.__turnstileLoading.push(cb);
+          return;
+        }
+        window.__turnstileLoading = [cb];
+        const script = document.createElement("script");
+        script.src = "https://challenges.cloudflare.com/turnstile/v0/api.js";
+        script.async = true;
+        script.defer = true;
+        script.onload = function () {
+          window.__turnstileLoading.forEach((fn) => fn());
+          window.__turnstileLoading = null;
+        };
+        document.head.appendChild(script);
+      }
+
+      function init() {
+        const container = document.getElementById("turnstile-widget");
+        const submitBtn = document.getElementById("newsletter-submit");
+        if (!container || !submitBtn || container.dataset.rendered) return;
+        container.dataset.rendered = "1";
+        submitBtn.disabled = true;
+
+        loadTurnstileScript(function () {
+          window.turnstile.render(container, {
+            sitekey: container.dataset.sitekey,
+            callback: function () {
+              submitBtn.disabled = false;
+            },
+          });
+        });
+      }
+
+      if (document.readyState !== "loading") init();
+      else document.addEventListener("DOMContentLoaded", init);
+      document.addEventListener("astro:page-load", init);
+    })();
+  </script>
+)}

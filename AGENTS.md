@@ -18,8 +18,9 @@ Khi làm việc trong repo này, đóng vai một cộng sự đa năng cho blog
 - CMS: TinaCMS (git-based, `npm run cms` để soạn local; xem `tina/config.ts`).
 - Thiết kế: font Inter, bảng màu cá nhân trong `src/styles/global.css` (xanh dương `#4775E6` ban ngày, xanh lá chanh `#A9E647` trên nền navy `#002A91`-derived ban đêm, cam san hô `#E66447` cho tag/motif phụ, `#5F6653` cho text muted) — khi đổi màu, sửa ở `:root` / `:root.dark` trong `global.css`, không hardcode màu rải rác trong component.
 - Bình luận: **Remark42** (mã nguồn mở, tự host bằng Docker) — không dùng Giscus (bắt buộc GitHub login, không phù hợp độc giả phổ thông) hay Cusdis (đã deprecated). Cấu hình `host`/`siteId` trong `src/site.config.ts`. Server Remark42 chạy tách biệt (Docker), cần bật `AUTH_ANON=true` để cho phép bình luận guest tên+email không cần đăng nhập.
-- Thông tin cá nhân/social/GTM id: `src/site.config.ts`.
-- Hosting dự kiến: Vercel (free tier trước, nâng cấp khi cần) + domain GoDaddy trỏ DNS thủ công.
+- Thông tin cá nhân/social/GTM id/Cloudflare token: `src/site.config.ts`.
+- Hosting: **Cloudflare** (Workers & Pages, free tier) + domain GoDaddy trỏ DNS. Site build ra static output (`output: "static"` mặc định trong Astro, xem `astro.config.mjs`) nên KHÔNG cần `@astrojs/cloudflare` adapter — Cloudflare serve thẳng thư mục `dist/` như static assets, theo đúng hướng dẫn chính thức tại docs.astro.build/en/guides/deploy/cloudflare/. Cấu hình deploy nằm trong `wrangler.jsonc` ở root. Deploy thủ công qua `npm run deploy` (chạy `astro build && wrangler deploy`), hoặc nối Git repo vào Cloudflare dashboard (Compute > Workers & Pages > Create application) để tự deploy mỗi lần push — build command `npm run build`, output directory `dist`. Security headers tĩnh khai báo trong `public/_headers`; CSP nghiêm ngặt cố tình chưa thêm (xem comment trong file) vì codebase dùng nhiều script `is:inline`.
+- Cloudflare Web Analytics (`cloudflareAnalyticsToken` trong site.config.ts) không cần consent-gate vì không dùng cookie/localStorage — khác với GTM. Cloudflare Turnstile (`cloudflareTurnstileSiteKey`) gắn ở form Newsletter chỉ chặn bot phía client; muốn chặn triệt để cần thêm bước verify token server-side (Cloudflare Pages Function) trước khi forward sang Buttondown, để làm sau khi có Buttondown API key thật.
 
 ## Development
 
@@ -50,3 +51,4 @@ Consult these guides before working on related tasks:
 - [Adding or managing content](https://docs.astro.build/en/guides/content-collections/)
 - [Adding styles or using Tailwind](https://docs.astro.build/en/guides/styling/)
 - [Supporting multiple languages](https://docs.astro.build/en/guides/internationalization/)
+- [Deploying to Cloudflare](https://docs.astro.build/en/guides/deploy/cloudflare/)

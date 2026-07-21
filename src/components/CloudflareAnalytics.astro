@@ -1,0 +1,14 @@
+---
+import { siteConfig } from "../site.config";
+
+const { cloudflareAnalyticsToken } = siteConfig;
+---
+
+{cloudflareAnalyticsToken && (
+  <script
+    is:inline
+    defer
+    src="https://static.cloudflareinsights.com/beacon.min.js"
+    data-cf-beacon={`{"token": "${cloudflareAnalyticsToken}"}`}
+  />
+)}

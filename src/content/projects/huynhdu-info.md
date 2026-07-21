@@ -2,7 +2,7 @@
 title: "huynhdu.info"
 description: "Blog cá nhân & portfolio, xây bằng Astro, TinaCMS, tối ưu SEO và AI-readable content."
 stack: ["Astro", "Tailwind CSS", "TinaCMS", "TypeScript"]
-repo: "https://github.com/huynhdu/huynhdublog"
+repo: "https://github.com/Huynhdumkt1909/huynhdublog02"
 featured: true
 order: 1
 ---

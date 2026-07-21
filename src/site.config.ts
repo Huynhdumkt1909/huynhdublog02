@@ -12,7 +12,7 @@ export const siteConfig = {
     en: "Hi, I'm Huynh Du. This is where I share writing and projects I'm working on.",
   },
   social: {
-    github: 'https://github.com/huynhdu',
+    github: 'https://github.com/Huynhdumkt1909',
     twitter: '',
     linkedin: '',
     email: 'huynhdumkt@gmail.com',

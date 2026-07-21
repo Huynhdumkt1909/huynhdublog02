@@ -1,0 +1,51 @@
+---
+import Search from "astro-pagefind/components/Search.astro";
+import { getLangFromUrl, useTranslations } from "../i18n/utils";
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+---
+
+<div id="search-modal" class="fixed inset-0 z-50 hidden items-start justify-center bg-black/40 p-4 pt-24">
+  <div class="w-full max-w-lg rounded-xl border border-[var(--color-border)] bg-[var(--color-bg-elevated)] p-4 shadow-2xl">
+    <Search
+      className="pagefind-ui--custom"
+      searchboxOptions={{ placeholder: t("search.placeholder"), autofocus: true }}
+    />
+  </div>
+</div>
+
+<script is:inline>
+  (function () {
+    function init() {
+      const modal = document.getElementById("search-modal");
+      const trigger = document.getElementById("search-trigger");
+      if (!modal || modal.dataset.bound) return;
+      modal.dataset.bound = "1";
+
+      function open() {
+        modal.classList.remove("hidden");
+        modal.classList.add("flex");
+      }
+      function close() {
+        modal.classList.add("hidden");
+        modal.classList.remove("flex");
+      }
+
+      trigger?.addEventListener("click", open);
+      modal.addEventListener("click", (e) => {
+        if (e.target === modal) close();
+      });
+      document.addEventListener("keydown", (e) => {
+        if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
+          e.preventDefault();
+          modal.classList.contains("hidden") ? open() : close();
+        }
+        if (e.key === "Escape") close();
+      });
+    }
+    if (document.readyState !== "loading") init();
+    else document.addEventListener("DOMContentLoaded", init);
+    document.addEventListener("astro:page-load", init);
+  })();
+</script>

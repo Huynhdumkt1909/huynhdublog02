@@ -1,0 +1,23 @@
+---
+import { siteConfig } from "../site.config";
+import { getLangFromUrl, getLocalizedPath } from "../i18n/utils";
+
+const lang = getLangFromUrl(Astro.url);
+---
+
+<a
+  href={getLocalizedPath("/about", lang)}
+  class="flex items-center gap-2 text-sm text-[var(--color-text-muted)] transition hover:text-[var(--color-accent)]"
+>
+  <img
+    src={siteConfig.avatar}
+    alt={siteConfig.name}
+    width="28"
+    height="28"
+    class="h-7 w-7 rounded-full object-cover"
+  />
+  <span>
+    {lang === "vi" ? "Viết bởi " : "Written by "}
+    <strong class="font-medium text-[var(--color-text)]">{siteConfig.name}</strong>
+  </span>
+</a>

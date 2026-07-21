@@ -1,0 +1,42 @@
+---
+import Layout from "../layouts/Layout.astro";
+import { siteConfig } from "../site.config";
+import { useTranslations } from "../i18n/utils";
+import { getAllProjects } from "../lib/content";
+import type { Lang } from "../i18n/ui";
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+const projects = await getAllProjects();
+---
+
+<Layout title={t("nav.projects")} description={siteConfig.description[lang]}>
+  <section class="mx-auto max-w-[var(--wide-width)] px-6 py-12">
+    <h1 class="mb-8 text-2xl font-bold tracking-tight">{t("nav.projects")}</h1>
+    <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      {projects.map((project) => (
+        <div class="rounded-xl border border-[var(--color-border)] p-5">
+          <h2 class="font-semibold">{project.data.title}</h2>
+          <p class="mt-2 text-sm text-[var(--color-text-muted)]">{project.data.description}</p>
+          <p class="mt-3 text-xs text-[var(--color-text-muted)]">{project.data.stack.join(" · ")}</p>
+          <div class="mt-4 flex gap-4 text-sm">
+            {project.data.link && (
+              <a href={project.data.link} target="_blank" rel="noopener" class="text-[var(--color-accent)]">
+                {t("projects.viewLive")}
+              </a>
+            )}
+            {project.data.repo && (
+              <a href={project.data.repo} target="_blank" rel="noopener" class="text-[var(--color-accent)]">
+                {t("projects.viewRepo")}
+              </a>
+            )}
+          </div>
+        </div>
+      ))}
+    </div>
+  </section>
+</Layout>

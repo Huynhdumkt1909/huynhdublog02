@@ -1,0 +1,59 @@
+---
+import { siteConfig } from "../site.config";
+import { getLangFromUrl } from "../i18n/utils";
+
+const lang = getLangFromUrl(Astro.url);
+const { host, siteId } = siteConfig.remark42;
+---
+
+{host && siteId && (
+  <>
+    <div id="remark42"></div>
+    <script is:inline define:vars={{ host, siteId, lang }}>
+      (function () {
+        function init() {
+          const isDark = document.documentElement.classList.contains("dark");
+          window.remark_config = {
+            host,
+            site_id: siteId,
+            components: ["embed"],
+            theme: isDark ? "dark" : "light",
+            locale: lang === "vi" ? "vi" : "en",
+          };
+          const mount = document.getElementById("remark42");
+          if (mount) mount.innerHTML = "";
+          (function (e, n) {
+            for (let o = 0; o < e.length; o++) {
+              const r = n.createElement("script");
+              let c = ".js";
+              const d = n.head || n.body;
+              if ("noModule" in r) {
+                r.type = "module";
+                c = ".mjs";
+              } else {
+                r.async = true;
+                r.defer = true;
+              }
+              r.src = window.remark_config.host + "/web/" + e[o] + c;
+              d.appendChild(r);
+            }
+          })(window.remark_config.components || ["embed"], document);
+        }
+
+        document.addEventListener("astro:page-load", init);
+        if (document.readyState !== "loading") init();
+        else document.addEventListener("DOMContentLoaded", init);
+
+        document.addEventListener("click", (e) => {
+          if (e.target.closest?.("#theme-toggle") && window.REMARK42) {
+            setTimeout(() => {
+              const isDark = document.documentElement.classList.contains("dark");
+              window.REMARK42.changeTheme(isDark ? "dark" : "light");
+            }, 0);
+          }
+        });
+      })();
+    </script>
+    <noscript>Vui lòng bật JavaScript để xem bình luận (Remark42).</noscript>
+  </>
+)}

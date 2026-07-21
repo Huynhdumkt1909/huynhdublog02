@@ -1,0 +1,21 @@
+---
+import { getLangFromUrl } from "../i18n/utils";
+import { languages } from "../i18n/ui";
+
+const lang = getLangFromUrl(Astro.url);
+const path = Astro.url.pathname;
+
+// Strip current locale prefix (if any) to get the "bare" path
+const bare = path.replace(/^\/en(\/|$)/, "/");
+
+const otherLang = lang === "vi" ? "en" : "vi";
+const otherPath = otherLang === "vi" ? bare : `/en${bare === "/" ? "" : bare}`;
+---
+
+<a
+  href={otherPath}
+  class="text-sm font-medium text-[var(--color-text-muted)] transition hover:text-[var(--color-accent)]"
+  aria-label={`Switch to ${languages[otherLang]}`}
+>
+  {otherLang.toUpperCase()}
+</a>

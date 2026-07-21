@@ -1,0 +1,109 @@
+---
+import { siteConfig } from "../site.config";
+import { getLangFromUrl, useTranslations, getLocalizedPath } from "../i18n/utils";
+import ThemeToggle from "./ThemeToggle.astro";
+import LangSwitch from "./LangSwitch.astro";
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+const home = getLocalizedPath("/", lang);
+
+const navLinks = [
+  { href: getLocalizedPath("/blog", lang), label: t("nav.blog") },
+  { href: getLocalizedPath("/projects", lang), label: t("nav.projects") },
+  { href: getLocalizedPath("/about", lang), label: t("nav.about") },
+];
+---
+
+<header class="sticky top-0 z-40 border-b border-[var(--color-border)] bg-[var(--color-bg)]/90 backdrop-blur">
+  <div class="mx-auto flex max-w-[var(--wide-width)] items-center justify-between px-6 py-4">
+    <a href={home} class="flex items-center gap-2 text-lg font-semibold tracking-tight" aria-label={siteConfig.name}>
+      <span
+        class="flex h-8 w-8 items-center justify-center rounded-full text-sm font-bold"
+        style="background-color: var(--color-accent); color: var(--color-on-accent)"
+      >
+        {siteConfig.wordmark}
+      </span>
+      <span>{siteConfig.name}</span>
+    </a>
+
+    <nav class="hidden items-center gap-6 text-sm font-medium sm:flex">
+      {navLinks.map((link) => (
+        <a href={link.href} class="text-[var(--color-text)] hover:text-[var(--color-accent)]">{link.label}</a>
+      ))}
+    </nav>
+
+    <div class="flex items-center gap-2 sm:gap-3">
+      <button
+        id="search-trigger"
+        type="button"
+        aria-label={t("nav.search")}
+        class="flex h-9 items-center gap-1.5 rounded-full border border-[var(--color-border)] px-3 text-xs text-[var(--color-text-muted)] transition hover:text-[var(--color-accent)]"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" class="h-3.5 w-3.5">
+          <circle cx="11" cy="11" r="7" /><path d="m21 21-4.3-4.3" />
+        </svg>
+        <span class="hidden sm:inline">⌘K</span>
+      </button>
+      <LangSwitch />
+      <ThemeToggle />
+      <button
+        id="mobile-menu-toggle"
+        type="button"
+        aria-label="Menu"
+        aria-expanded="false"
+        class="flex h-9 w-9 items-center justify-center rounded-full border border-[var(--color-border)] text-[var(--color-text-muted)] transition hover:text-[var(--color-accent)] sm:hidden"
+      >
+        <svg data-icon="open" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" class="h-4 w-4">
+          <path d="M4 7h16M4 12h16M4 17h16" />
+        </svg>
+        <svg data-icon="close" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" class="hidden h-4 w-4">
+          <path d="M6 6l12 12M18 6L6 18" />
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <nav id="mobile-menu" class="hidden flex-col gap-1 border-t border-[var(--color-border)] px-6 py-3 text-sm font-medium sm:hidden">
+    {navLinks.map((link) => (
+      <a href={link.href} class="rounded-md px-2 py-2 text-[var(--color-text)] hover:bg-[var(--color-accent-soft)] hover:text-[var(--color-accent)]">
+        {link.label}
+      </a>
+    ))}
+  </nav>
+</header>
+
+<script is:inline>
+  (function () {
+    function init() {
+      const toggle = document.getElementById("mobile-menu-toggle");
+      const menu = document.getElementById("mobile-menu");
+      if (!toggle || !menu || toggle.dataset.bound) return;
+      toggle.dataset.bound = "1";
+
+      function close() {
+        menu.classList.add("hidden");
+        menu.classList.remove("flex");
+        toggle.setAttribute("aria-expanded", "false");
+        toggle.querySelector('[data-icon="open"]')?.classList.remove("hidden");
+        toggle.querySelector('[data-icon="close"]')?.classList.add("hidden");
+      }
+      function open() {
+        menu.classList.remove("hidden");
+        menu.classList.add("flex");
+        toggle.setAttribute("aria-expanded", "true");
+        toggle.querySelector('[data-icon="open"]')?.classList.add("hidden");
+        toggle.querySelector('[data-icon="close"]')?.classList.remove("hidden");
+      }
+
+      toggle.addEventListener("click", () => {
+        menu.classList.contains("hidden") ? open() : close();
+      });
+      menu.querySelectorAll("a").forEach((a) => a.addEventListener("click", close));
+      document.addEventListener("astro:page-load", close);
+    }
+    if (document.readyState !== "loading") init();
+    else document.addEventListener("DOMContentLoaded", init);
+    document.addEventListener("astro:page-load", init);
+  })();
+</script>

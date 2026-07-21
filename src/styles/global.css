@@ -1,0 +1,117 @@
+@import "tailwindcss";
+@import "@fontsource-variable/inter";
+
+:root {
+  /* Bảng màu cá nhân từ Adobe Color: #4775E6 · #A9E647 · #E66447 · #002A91 · #5F6653 */
+  --color-accent: #4775e6; /* xanh dương — accent chính ban ngày */
+  --color-accent-soft: #e7ecfc;
+  --color-accent-secondary: #e66447; /* cam san hô — motif/tag/nhấn phụ */
+  --color-accent-secondary-soft: #fbe7e1;
+  --color-highlight: #a9e647; /* xanh lá chanh — dùng cho badge/hover đặc biệt */
+  --color-on-accent: #ffffff; /* màu chữ đặt trên nền accent */
+  --color-bg: #f8f9fd;
+  --color-bg-elevated: #ffffff;
+  --color-text: #12162b;
+  --color-text-muted: #5f6653;
+  --color-border: #e3e6f0;
+
+  --font-sans: "Inter Variable", "Inter", system-ui, sans-serif;
+  --font-display: "Inter Variable", "Inter", system-ui, sans-serif;
+
+  --content-width: 42rem;
+  --wide-width: 72rem;
+}
+
+:root.dark {
+  --color-accent: #a9e647; /* xanh lá chanh nổi bật trên nền navy đậm ban đêm */
+  --color-accent-soft: #202b13;
+  --color-accent-secondary: #e66447;
+  --color-accent-secondary-soft: #33201a;
+  --color-highlight: #4775e6;
+  --color-on-accent: #071022; /* chữ tối đặt trên nền lime sáng */
+  --color-bg: #050a24; /* nền tối gốc từ #002A91, đậm hoá để đủ tương phản */
+  --color-bg-elevated: #0d1638;
+  --color-text: #eef0fa;
+  --color-text-muted: #a3aac2;
+  --color-border: #1c254a;
+}
+
+* {
+  border-color: var(--color-border);
+}
+
+html {
+  color-scheme: light;
+}
+html.dark {
+  color-scheme: dark;
+}
+
+body {
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-sans);
+}
+
+::selection {
+  background-color: var(--color-accent);
+  color: white;
+}
+
+a {
+  color: var(--color-accent);
+}
+
+/* motif cá nhân: dấu chấm-gạch nhỏ dùng làm divider/bullet thay cho "keel rule" */
+.motif-divider {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: var(--color-accent);
+}
+.motif-divider::before {
+  content: "";
+  width: 0.9rem;
+  height: 2px;
+  background: currentColor;
+  display: inline-block;
+}
+
+.prose-content h2 {
+  font-weight: 600;
+  margin-top: 2em;
+  margin-bottom: 0.6em;
+}
+.prose-content h3 {
+  font-weight: 600;
+  margin-top: 1.6em;
+  margin-bottom: 0.5em;
+}
+.prose-content p {
+  line-height: 1.75;
+  margin-bottom: 1.2em;
+}
+.prose-content ul,
+.prose-content ol {
+  margin: 1em 0 1.2em 1.4em;
+  line-height: 1.7;
+}
+.prose-content ul {
+  list-style: disc;
+}
+.prose-content ol {
+  list-style: decimal;
+}
+.prose-content a {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.prose-content pre {
+  padding: 1rem;
+  border-radius: 0.5rem;
+  overflow-x: auto;
+  margin: 1.2em 0;
+}
+.prose-content code {
+  font-size: 0.9em;
+}

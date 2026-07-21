@@ -1,0 +1,40 @@
+---
+import { siteConfig } from "../site.config";
+import { getLangFromUrl, useTranslations } from "../i18n/utils";
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+const { buttondownUsername } = siteConfig;
+---
+
+<section class="mx-auto max-w-[var(--content-width)] rounded-xl border border-[var(--color-border)] bg-[var(--color-bg-elevated)] p-6">
+  <h3 class="mb-1 text-base font-semibold">{t("newsletter.title")}</h3>
+  <p class="mb-4 text-sm text-[var(--color-text-muted)]">{t("newsletter.description")}</p>
+  <form
+    action={buttondownUsername ? `https://buttondown.com/api/emails/embed-subscribe/${buttondownUsername}` : undefined}
+    method="post"
+    target="popupwindow"
+    class="flex flex-col gap-2 sm:flex-row"
+  >
+    <input
+      type="email"
+      name="email"
+      required
+      placeholder={t("newsletter.placeholder")}
+      class="flex-1 rounded-full border border-[var(--color-border)] bg-transparent px-4 py-2 text-sm outline-none focus:border-[var(--color-accent)]"
+    />
+    <button
+      type="submit"
+      disabled={!buttondownUsername}
+      class="rounded-full px-4 py-2 text-sm font-medium disabled:opacity-50"
+      style="background-color: var(--color-accent); color: var(--color-on-accent)"
+    >
+      {t("newsletter.submit")}
+    </button>
+  </form>
+  {!buttondownUsername && (
+    <p class="mt-2 text-xs text-[var(--color-text-muted)]">
+      {lang === "vi" ? "(Chưa kết nối Buttondown — điền username vào site.config.ts)" : "(Buttondown not connected yet — set username in site.config.ts)"}
+    </p>
+  )}
+</section>

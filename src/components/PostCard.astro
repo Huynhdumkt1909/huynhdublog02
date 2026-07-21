@@ -1,0 +1,37 @@
+---
+import type { CollectionEntry } from "astro:content";
+import { getLangFromUrl, useTranslations, getLocalizedPath } from "../i18n/utils";
+import { postSlug } from "../lib/content";
+
+interface Props {
+  post: CollectionEntry<"blog">;
+}
+
+const { post } = Astro.props;
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+const href = getLocalizedPath(`/blog/${postSlug(post)}`, lang);
+const dateFormatted = post.data.publishedDate.toLocaleDateString(lang === "vi" ? "vi-VN" : "en-US", {
+  year: "numeric",
+  month: "long",
+  day: "numeric",
+});
+---
+
+<article class="group border-b border-[var(--color-border)] py-6 first:pt-0">
+  <a href={href} class="block">
+    <h3 class="text-lg font-semibold transition group-hover:text-[var(--color-accent)]">{post.data.title}</h3>
+    <p class="mt-1.5 text-sm text-[var(--color-text-muted)]">{post.data.excerpt}</p>
+    <div class="mt-3 flex flex-wrap items-center gap-2 text-xs text-[var(--color-text-muted)]">
+      <time datetime={post.data.publishedDate.toISOString()}>{dateFormatted}</time>
+      {post.data.tags.map((tag) => (
+        <span
+          class="rounded-full px-2 py-0.5 text-xs font-medium"
+          style="background-color: var(--color-accent-secondary-soft); color: var(--color-accent-secondary)"
+        >
+          {tag}
+        </span>
+      ))}
+    </div>
+  </a>
+</article>

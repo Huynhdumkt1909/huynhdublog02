@@ -1,0 +1,60 @@
+---
+import { siteConfig } from "../site.config";
+import { getLangFromUrl, useTranslations, getLocalizedPath } from "../i18n/utils";
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+const year = new Date().getFullYear();
+
+const navLinks = [
+  { href: getLocalizedPath("/blog", lang), label: t("nav.blog") },
+  { href: getLocalizedPath("/projects", lang), label: t("nav.projects") },
+  { href: getLocalizedPath("/about", lang), label: t("nav.about") },
+];
+---
+
+<footer class="mt-24 border-t border-[var(--color-border)]">
+  <div class="mx-auto max-w-[var(--wide-width)] px-6 py-12">
+    <div class="grid gap-10 sm:grid-cols-3">
+      <div>
+        <div class="motif-divider text-sm font-semibold">{siteConfig.name}</div>
+        <p class="mt-3 max-w-xs text-sm text-[var(--color-text-muted)]">{siteConfig.bio[lang]}</p>
+      </div>
+
+      <div>
+        <p class="mb-3 text-xs font-semibold uppercase tracking-wider text-[var(--color-text-muted)]">
+          {lang === "vi" ? "Điều hướng" : "Navigate"}
+        </p>
+        <ul class="space-y-2 text-sm">
+          {navLinks.map((link) => (
+            <li><a href={link.href} class="text-[var(--color-text-muted)] hover:text-[var(--color-accent)]">{link.label}</a></li>
+          ))}
+        </ul>
+      </div>
+
+      <div>
+        <p class="mb-3 text-xs font-semibold uppercase tracking-wider text-[var(--color-text-muted)]">
+          {lang === "vi" ? "Kết nối & khác" : "Connect & more"}
+        </p>
+        <ul class="space-y-2 text-sm">
+          {siteConfig.social.github && (
+            <li><a href={siteConfig.social.github} class="text-[var(--color-text-muted)] hover:text-[var(--color-accent)]" rel="me noopener" target="_blank">GitHub</a></li>
+          )}
+          {siteConfig.social.email && (
+            <li><a href={`mailto:${siteConfig.social.email}`} class="text-[var(--color-text-muted)] hover:text-[var(--color-accent)]">Email</a></li>
+          )}
+          <li><a href="/rss.xml" class="text-[var(--color-text-muted)] hover:text-[var(--color-accent)]">RSS</a></li>
+          <li>
+            <a href="/llms.txt" class="text-[var(--color-text-muted)] hover:text-[var(--color-accent)]">
+              {lang === "vi" ? "Dành cho AI ↗" : "For AI ↗"}
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="mt-10 border-t border-[var(--color-border)] pt-6 text-sm text-[var(--color-text-muted)]">
+      <p>&copy; {year} {siteConfig.name}. {t("footer.rights")}</p>
+    </div>
+  </div>
+</footer>

@@ -1,0 +1,27 @@
+---
+import { render } from "astro:content";
+import Layout from "../layouts/Layout.astro";
+import { siteConfig } from "../site.config";
+import { getPageByLang } from "../lib/content";
+import type { Lang } from "../i18n/ui";
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const page = await getPageByLang(lang, "privacy");
+const { Content } = page ? await render(page) : { Content: null };
+const seo = page?.data.seo;
+---
+
+<Layout
+  title={seo?.title ?? page?.data.title ?? "Privacy"}
+  description={seo?.description ?? siteConfig.description[lang]}
+  image={seo?.ogImage}
+>
+  <section class="mx-auto max-w-[var(--content-width)] px-6 py-12">
+    <h1 class="mb-8 text-2xl font-bold tracking-tight">{page?.data.title}</h1>
+    <div class="prose-content">{Content && <Content />}</div>
+  </section>
+</Layout>

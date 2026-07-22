@@ -39,12 +39,11 @@ const rssPath = lang === "en" ? "/en/rss.xml" : "/rss.xml";
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <meta name="generator" content={Astro.generator} />
     <link rel="alternate" type="application/rss+xml" title="RSS" href={rssPath} />
     <link rel="alternate" hreflang="vi" href={new URL(viPath, siteConfig.url)} />
     <link rel="alternate" hreflang="en" href={new URL(enPath, siteConfig.url)} />
     <link rel="alternate" hreflang="x-default" href={new URL(viPath, siteConfig.url)} />
-    <SEO {title} {description} {type} {image} {publishedDate} {updatedDate} {tags} {jsonLd} />
+    <SEO {title} {description} {type} {image} {publishedDate} {updatedDate} {tags} {jsonLd} {lang} />
     <GTM />
     <CloudflareAnalytics />
     <ClientRouter />

@@ -9,6 +9,7 @@ import AuthorByline from "../components/AuthorByline.astro";
 import { getLangFromUrl, useTranslations, getLocalizedPath } from "../i18n/utils";
 import { siteConfig } from "../site.config";
 import { getPostByTranslationKey, postSlug } from "../lib/content";
+import { personJsonLd } from "../lib/seo";
 import type { Lang } from "../i18n/ui";
 
 interface Props {
@@ -51,18 +52,12 @@ const jsonLd = {
   description: excerpt,
   datePublished: publishedDate.toISOString(),
   dateModified: (updatedDate ?? publishedDate).toISOString(),
-  author: {
-    "@type": "Person",
-    name: siteConfig.name,
-    url: new URL(getLocalizedPath("/about", lang), siteConfig.url).toString(),
-    image: new URL(siteConfig.avatar, siteConfig.url).toString(),
-  },
+  author: personJsonLd(lang),
   inLanguage: lang,
 };
 
 const topHeadings = headings.filter((h) => h.depth <= 3);
 const canonicalUrl = new URL(Astro.url.pathname, siteConfig.url).toString();
-const markdownUrl = `${Astro.url.pathname.replace(/\/$/, "")}.md`;
 ---
 
 <Layout
@@ -102,14 +97,8 @@ const markdownUrl = `${Astro.url.pathname.replace(/\/$/, "")}.md`;
         <AuthorByline />
       </div>
 
-      <div class="mt-4 flex flex-wrap items-center justify-between gap-3">
+      <div class="mt-4">
         <ShareButtons url={canonicalUrl} title={title} />
-        <a
-          href={markdownUrl}
-          class="flex items-center gap-1.5 rounded-full border border-[var(--color-border)] px-3 py-1 text-xs text-[var(--color-text-muted)] transition hover:border-[var(--color-accent)] hover:text-[var(--color-accent)]"
-        >
-          🤖 {lang === "vi" ? "Bản Markdown cho AI" : "Markdown for AI"}
-        </a>
       </div>
 
       {topHeadings.length > 0 && (

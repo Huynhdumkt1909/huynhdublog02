@@ -42,10 +42,13 @@ const t = useTranslations(lang);
         localStorage.setItem("consent", "granted");
         banner.classList.add("hidden");
         if (window.gtag) {
+          // Banner chỉ xin đồng ý đo lường truy cập (analytics), không nhắc tới quảng cáo —
+          // nên chỉ grant analytics_storage. Nếu sau này thêm Meta Pixel/TikTok Pixel, phải
+          // sửa lại nội dung banner (consent.message) TRƯỚC rồi mới được grant thêm ad_*.
           window.gtag("consent", "update", {
-            ad_storage: "granted",
-            ad_user_data: "granted",
-            ad_personalization: "granted",
+            ad_storage: "denied",
+            ad_user_data: "denied",
+            ad_personalization: "denied",
             analytics_storage: "granted",
           });
         }

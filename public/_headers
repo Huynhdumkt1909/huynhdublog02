@@ -7,3 +7,8 @@
   X-Frame-Options: DENY
   Referrer-Policy: strict-origin-when-cross-origin
   Permissions-Policy: camera=(), microphone=(), geolocation=()
+  Strict-Transport-Security: max-age=63072000; includeSubDomains; preload
+
+# Fix charset cho .md/.txt (blog markdown twin, llms.txt, robots.txt) làm ở Worker script
+# (src/worker/index.ts) chứ không làm ở đây — _headers không match được path có dấu gạch
+# ngang trong slug qua cú pháp :placeholder.

@@ -3,6 +3,7 @@ import { render } from "astro:content";
 import Layout from "../layouts/Layout.astro";
 import { siteConfig } from "../site.config";
 import { getPageByLang } from "../lib/content";
+import { personJsonLd } from "../lib/seo";
 import type { Lang } from "../i18n/ui";
 
 interface Props {
@@ -19,6 +20,7 @@ const seo = page?.data.seo;
   title={seo?.title ?? page?.data.title ?? "About"}
   description={seo?.description ?? siteConfig.description[lang]}
   image={seo?.ogImage}
+  jsonLd={personJsonLd(lang)}
 >
   <section class="mx-auto max-w-[var(--content-width)] px-6 py-12">
     <h1 class="mb-8 text-2xl font-bold tracking-tight">{page?.data.title}</h1>

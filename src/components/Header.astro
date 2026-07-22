@@ -103,9 +103,14 @@ const navLinks = [
 
     function init() {
       // toggle/menu bị tạo mới sau mỗi lần điều hướng, phải gắn lại listener trên element mới.
+      // Nhưng astro:page-load fire cả ở lần load đầu (không chỉ điều hướng sau) — cùng lúc với
+      // nhánh readyState/DOMContentLoaded bên dưới — nên init() có thể chạy 2 lần cho CÙNG 1
+      // element trong 1 lần load, nhân đôi listener và làm menu mở-rồi-đóng-ngay khi bấm.
+      // Guard bằng dataset.bound (giống ConsentBanner.astro) để chỉ bind đúng 1 lần mỗi element.
       const toggle = document.getElementById("mobile-menu-toggle");
       const menu = document.getElementById("mobile-menu");
-      if (!toggle || !menu) return;
+      if (!toggle || !menu || toggle.dataset.bound) return;
+      toggle.dataset.bound = "1";
 
       toggle.addEventListener("click", () => {
         menu.classList.contains("hidden") ? open() : close();

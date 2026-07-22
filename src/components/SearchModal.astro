@@ -34,9 +34,12 @@ const t = useTranslations(lang);
     function init() {
       // #search-modal/#search-trigger bị tạo mới sau mỗi lần điều hướng (client router thay
       // toàn bộ <body>), nên phải gắn lại listener trên chính các element này mỗi lần init().
+      // Guard dataset.bound vì astro:page-load cũng fire ở lần load đầu, trùng với nhánh
+      // readyState bên dưới, nên init() có thể chạy 2 lần cho cùng 1 element (nhân đôi listener).
       const modal = getModal();
       const trigger = document.getElementById("search-trigger");
-      if (!modal) return;
+      if (!modal || modal.dataset.bound) return;
+      modal.dataset.bound = "1";
 
       trigger?.addEventListener("click", open);
       modal.addEventListener("click", (e) => {

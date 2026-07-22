@@ -40,6 +40,12 @@ const navLinks = [
           {siteConfig.social.github && (
             <li><a href={siteConfig.social.github} class="text-[var(--color-text-muted)] hover:text-[var(--color-accent)]" rel="me noopener" target="_blank">GitHub</a></li>
           )}
+          {siteConfig.social.facebook && (
+            <li><a href={siteConfig.social.facebook} class="text-[var(--color-text-muted)] hover:text-[var(--color-accent)]" rel="me noopener" target="_blank">Facebook</a></li>
+          )}
+          {siteConfig.social.linkedin && (
+            <li><a href={siteConfig.social.linkedin} class="text-[var(--color-text-muted)] hover:text-[var(--color-accent)]" rel="me noopener" target="_blank">LinkedIn</a></li>
+          )}
           {siteConfig.social.email && (
             <li><a href={`mailto:${siteConfig.social.email}`} class="text-[var(--color-text-muted)] hover:text-[var(--color-accent)]">Email</a></li>
           )}
@@ -53,8 +59,21 @@ const navLinks = [
       </div>
     </div>
 
-    <div class="mt-10 border-t border-[var(--color-border)] pt-6 text-sm text-[var(--color-text-muted)]">
+    <div class="mt-10 flex flex-wrap items-center gap-x-3 gap-y-1 border-t border-[var(--color-border)] pt-6 text-sm text-[var(--color-text-muted)]">
       <p>&copy; {year} {siteConfig.name}. {t("footer.rights")}</p>
+      <span aria-hidden="true">·</span>
+      <a href={getLocalizedPath("/privacy", lang)} class="hover:text-[var(--color-accent)]">{t("footer.privacy")}</a>
+      {siteConfig.social.email && (
+        <>
+          <span aria-hidden="true">·</span>
+          <a
+            href={`mailto:${siteConfig.social.email}?subject=${encodeURIComponent(t("footer.deleteDataSubject"))}`}
+            class="hover:text-[var(--color-accent)]"
+          >
+            {t("footer.deleteData")}
+          </a>
+        </>
+      )}
     </div>
   </div>
 </footer>

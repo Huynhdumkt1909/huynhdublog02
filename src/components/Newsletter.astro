@@ -4,18 +4,15 @@ import { getLangFromUrl, useTranslations } from "../i18n/utils";
 
 const lang = getLangFromUrl(Astro.url);
 const t = useTranslations(lang);
-const { buttondownUsername, cloudflareTurnstileSiteKey } = siteConfig;
+const { cloudflareTurnstileSiteKey } = siteConfig;
 ---
 
 <section class="mx-auto max-w-[var(--content-width)] rounded-xl border border-[var(--color-border)] bg-[var(--color-bg-elevated)] p-6">
   <h3 class="mb-1 text-base font-semibold">{t("newsletter.title")}</h3>
   <p class="mb-4 text-sm text-[var(--color-text-muted)]">{t("newsletter.description")}</p>
-  <form
-    action={buttondownUsername ? `https://buttondown.com/api/emails/embed-subscribe/${buttondownUsername}` : undefined}
-    method="post"
-    target="popupwindow"
-    class="flex flex-col gap-2 sm:flex-row"
-  >
+  <p id="newsletter-success" hidden class="mb-3 text-sm" style="color: var(--color-accent)">{t("newsletter.success")}</p>
+  <p id="newsletter-error" hidden class="mb-3 text-sm text-red-500">{t("newsletter.error")}</p>
+  <form action="/api/subscribe" method="post" class="flex flex-col gap-2 sm:flex-row">
     <input
       type="email"
       name="email"
@@ -29,27 +26,40 @@ const { buttondownUsername, cloudflareTurnstileSiteKey } = siteConfig;
     <button
       id="newsletter-submit"
       type="submit"
-      disabled={!buttondownUsername}
+      disabled={!!cloudflareTurnstileSiteKey}
       class="rounded-full px-4 py-2 text-sm font-medium disabled:opacity-50"
       style="background-color: var(--color-accent); color: var(--color-on-accent)"
     >
       {t("newsletter.submit")}
     </button>
   </form>
-  {!buttondownUsername && (
-    <p class="mt-2 text-xs text-[var(--color-text-muted)]">
-      {lang === "vi" ? "(Chưa kết nối Buttondown — điền username vào site.config.ts)" : "(Buttondown not connected yet — set username in site.config.ts)"}
-    </p>
-  )}
 </section>
+
+<script is:inline>
+  (function () {
+    function init() {
+      var params = new URLSearchParams(location.search);
+      var status = params.get("newsletter");
+      if (!status) return;
+      var el = document.getElementById(status === "ok" ? "newsletter-success" : "newsletter-error");
+      if (el) el.hidden = false;
+      params.delete("newsletter");
+      var rest = params.toString();
+      history.replaceState(null, "", location.pathname + (rest ? "?" + rest : "") + location.hash);
+    }
+    if (document.readyState !== "loading") init();
+    else document.addEventListener("DOMContentLoaded", init);
+    document.addEventListener("astro:page-load", init);
+  })();
+</script>
 
 {cloudflareTurnstileSiteKey && (
   <script is:inline>
     (function () {
-      // Turnstile chỉ chặn được bot phía client (không chạy JS/không giải được challenge).
-      // Bot POST thẳng vào endpoint Buttondown thì widget này không cản được — muốn chặn triệt để
-      // cần thêm bước verify token phía server (Cloudflare Pages Function) trước khi forward sang
-      // Buttondown, việc này để sau khi đã có Buttondown API key thật để test.
+      // Token được verify thật ở server (xem src/worker/index.ts, POST /api/subscribe) trước khi
+      // forward sang Buttondown — widget ở đây chỉ tạo token, không phải lớp chặn bot duy nhất.
+      // appearance: "interaction-only" giữ widget ẩn với người dùng thật, chỉ hiện thử thách khi
+      // Cloudflare nghi ngờ là bot — tránh cái khung "Thành công!" nằm lì trên form sau khi verify xong.
       function loadTurnstileScript(cb) {
         if (window.turnstile) return cb();
         if (window.__turnstileLoading) {
@@ -78,6 +88,7 @@ const { buttondownUsername, cloudflareTurnstileSiteKey } = siteConfig;
         loadTurnstileScript(function () {
           window.turnstile.render(container, {
             sitekey: container.dataset.sitekey,
+            appearance: "interaction-only",
             callback: function () {
               submitBtn.disabled = false;
             },

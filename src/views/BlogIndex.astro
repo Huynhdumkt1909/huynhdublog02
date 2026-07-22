@@ -17,8 +17,8 @@ const posts = await getPostsByLang(lang);
 
 <Layout title={t("nav.blog")} description={siteConfig.description[lang]}>
   <section class="mx-auto max-w-[var(--wide-width)] px-6 py-12">
-    <h1 class="mb-8 text-2xl font-bold tracking-tight">{t("nav.blog")}</h1>
-    <div class="max-w-[var(--content-width)]">
+    <h1 class="mb-8 text-3xl font-bold tracking-tight sm:text-4xl">{t("nav.blog")}</h1>
+    <div class="grid grid-cols-1 gap-6 sm:block sm:gap-0">
       {posts.map((post) => <PostCard post={post} />)}
     </div>
   </section>

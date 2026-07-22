@@ -17,7 +17,7 @@ const blog = defineCollection({
     excerpt: z.string(),
     cover: z.string().optional(),
     tags: z.array(z.string()).default([]),
-    author: z.string().default("Huynh Du"),
+    author: z.string().default("Huỳnh Dự"),
     publishedDate: z.coerce.date(),
     updatedDate: z.coerce.date().optional(),
     draft: z.boolean().default(false),

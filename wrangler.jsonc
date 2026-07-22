@@ -2,10 +2,16 @@
   "$schema": "https://developers.cloudflare.com/pages/reference/wrangler-configuration/wrangler.schema.json",
   "name": "huynhdublog",
   "compatibility_date": "2026-07-21",
-  // Site build tĩnh (output: "static" trong astro.config.mjs) — không cần @astrojs/cloudflare
-  // adapter, Cloudflare chỉ serve thẳng thư mục dist/ như static assets.
+  // Site build tĩnh (output: "static" trong astro.config.mjs) — Cloudflare serve thẳng thư mục
+  // dist/ như static assets. "main" chỉ xử lý POST /api/subscribe (verify Turnstile + forward
+  // Buttondown); mọi request khác rơi xuống ASSETS binding để phục vụ file tĩnh như bình thường.
+  "main": "src/worker/index.ts",
   "assets": {
     "directory": "./dist",
-    "not_found_handling": "404-page"
+    "binding": "ASSETS",
+    "not_found_handling": "404-page",
+    // Cho mọi request qua Worker script trước (kể cả static asset) để có thể sửa lại
+    // Content-Type/charset cho .md và .txt trước khi trả về — xem comment trong src/worker/index.ts.
+    "run_worker_first": true
   }
 }

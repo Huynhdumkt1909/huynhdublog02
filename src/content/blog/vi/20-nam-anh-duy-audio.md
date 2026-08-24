@@ -1,5 +1,5 @@
 ---
-title: "20 năm Anh Duy Audio: làm video kỷ niệm cho một nhà phân phối âm thanh lâu đời"
+title: "20 năm Anh Duy Audio: tổ chức lễ kỷ niệm thương hiệu phân phối âm thanh chiếm thị phần lớn nhất Việt Nam"
 excerpt: "Góp một phần nhỏ vào video kỷ niệm 20 năm Anh Duy Audio — nhà phân phối các thương hiệu âm thanh như Denon, Klipsch, Accuphase tại Việt Nam."
 tags: ["marketing", "sản xuất nội dung", "case-study"]
 publishedDate: 2019-11-20

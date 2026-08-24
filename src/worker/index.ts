@@ -2,6 +2,7 @@ interface Env {
   ASSETS: { fetch(request: Request): Promise<Response> };
   TURNSTILE_SECRET: string;
   BUTTONDOWN_API_KEY: string;
+  DB: D1Database;
 }
 
 // Astro build ra static file cho các route .ts (blog/*.md, llms.txt, robots.txt). Cloudflare tự
@@ -19,7 +20,9 @@ export default {
     if (request.method === "POST" && url.pathname === "/api/subscribe") {
       return handleSubscribe(request, env);
     }
-
+    if (request.method === "POST" && url.pathname === "/api/register") {
+     return handleRegister(request, env);
+    }
     const response = await env.ASSETS.fetch(request);
     const ext = Object.keys(TEXT_CHARSET_BY_EXT).find((e) => url.pathname.endsWith(e));
     if (ext && !response.headers.get("Content-Type")?.includes("charset")) {
@@ -84,6 +87,60 @@ async function handleSubscribe(request: Request, env: Env): Promise<Response> {
   // thông tin ai đã đăng ký (email enumeration) qua thông báo khác nhau.
   if (!subscribeRes.ok && subscribeRes.status !== 400) {
     return redirectTo("error");
+  }
+
+  return redirectTo("ok");
+}
+async function handleRegister(request: Request, env: Env): Promise<Response> {
+  const origin = new URL(request.url).origin;
+  const redirectTo = (status: "ok" | "error" | "duplicate"): Response => {
+    let target: URL;
+    try {
+      target = new URL(request.headers.get("Referer") ?? origin);
+    } catch {
+      target = new URL(origin);
+    }
+    target.searchParams.set("warranty", status);
+    return Response.redirect(target.toString(), 303);
+  };
+
+  const formData = await request.formData();
+  const serial = formData.get("serial");
+  const fullName = formData.get("full_name");
+  const phone = formData.get("phone");
+  const email = formData.get("email");
+  const token = formData.get("cf-turnstile-response");
+
+  if (
+    typeof serial !== "string" || !serial ||
+    typeof fullName !== "string" || !fullName ||
+    typeof phone !== "string" || !phone ||
+    typeof email !== "string" || !email ||
+    typeof token !== "string" || !token
+  ) {
+    return redirectTo("error");
+  }
+
+  const verifyRes = await fetch("https://challenges.cloudflare.com/turnstile/v0/siteverify", {
+    method: "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body: new URLSearchParams({
+      secret: env.TURNSTILE_SECRET,
+      response: token,
+      remoteip: request.headers.get("CF-Connecting-IP") ?? "",
+    }),
+  });
+  const verifyData = (await verifyRes.json()) as { success: boolean };
+  if (!verifyData.success) {
+    return redirectTo("error");
+  }
+
+  try {
+    await env.DB.prepare(
+      "INSERT INTO registrations (serial, full_name, phone, email) VALUES (?, ?, ?, ?)"
+    ).bind(serial, fullName, phone, email).run();
+  } catch (err) {
+    return redirectTo("duplicate");
   }
 
   return redirectTo("ok");

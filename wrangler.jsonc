@@ -6,6 +6,14 @@
   // dist/ như static assets. "main" chỉ xử lý POST /api/subscribe (verify Turnstile + forward
   // Buttondown); mọi request khác rơi xuống ASSETS binding để phục vụ file tĩnh như bình thường.
   "main": "src/worker/index.ts",
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "baohanhweilijet",
+      "database_id": "1fd18603-84d8-4912-98c6-b525ffb6a656"
+    }
+  ],
+
   "assets": {
     "directory": "./dist",
     "binding": "ASSETS",
